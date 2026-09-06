@@ -8,6 +8,7 @@ python -m pip install --quiet --upgrade -r requirements.txt
 pyinstaller --noconfirm --clean --onefile --windowed `
     --name "BarraDMT" `
     --icon "barra_dmt\presentacion\logo.ico" `
+    --add-data "barra_dmt\datos_iniciales;datos_iniciales" `
     --distpath "." `
     run.py
 

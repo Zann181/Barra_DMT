@@ -5,7 +5,7 @@ a = Analysis(
     ['run.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('barra_dmt/datos_iniciales', 'datos_iniciales')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

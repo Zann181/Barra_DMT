@@ -39,3 +39,11 @@ def ruta_ejecutable() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).parent
     return Path(__file__).resolve().parents[2]
+
+
+def carpeta_datos_iniciales() -> Path:
+    """Carpeta empaquetada con la app (db + imagenes de fabrica), para
+    precargar un PC nuevo la primera vez que corre. Con PyInstaller
+    --onefile vive en la carpeta temporal de extraccion (sys._MEIPASS)."""
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+    return base / "datos_iniciales"

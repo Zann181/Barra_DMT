@@ -1,11 +1,12 @@
 """Conexion SQLite y creacion del esquema. Unico lugar que conoce SQL crudo."""
 from __future__ import annotations
 
+import shutil
 import sqlite3
 import time
 import uuid
 
-from .rutas import ruta_base_datos
+from .rutas import NOMBRE_ARCHIVO_BD, carpeta_datos_app, carpeta_datos_iniciales, ruta_base_datos
 
 _ESQUEMA = """
 CREATE TABLE IF NOT EXISTS productos (
@@ -160,7 +161,25 @@ def obtener_conexion() -> sqlite3.Connection:
     return conexion
 
 
+def _precargar_datos_iniciales_si_falta() -> None:
+    """En un PC nuevo (sin BD todavia en %LOCALAPPDATA%) copia la BD e imagenes
+    empaquetadas con la app, para que arranque con el catalogo/historial real
+    en vez de con el semillero vacio. Si el usuario ya tiene datos, no toca nada."""
+    destino_db = ruta_base_datos()
+    if destino_db.exists():
+        return
+    origen = carpeta_datos_iniciales()
+    origen_db = origen / NOMBRE_ARCHIVO_BD
+    if not origen_db.exists():
+        return
+    shutil.copy2(origen_db, destino_db)
+    origen_imagenes = origen / "imagenes"
+    if origen_imagenes.is_dir():
+        shutil.copytree(origen_imagenes, carpeta_datos_app() / "imagenes", dirs_exist_ok=True)
+
+
 def inicializar_base_datos() -> None:
+    _precargar_datos_iniciales_si_falta()
     conexion = obtener_conexion()
     try:
         conexion.executescript(_ESQUEMA)
